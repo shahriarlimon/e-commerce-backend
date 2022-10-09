@@ -9,6 +9,17 @@ app.get('/', (req, res) => {
 app.use("/api/v1", apiRoutes)
 /* mongodb connection */
 connectDb()
+
+app.use((error, req, res, next) => {
+  console.log(error)
+  next(error)
+})
+app.use((error, req, res, next) => {
+  res.status(500).json({
+    message: error.message,
+    stack: error.stack
+  })
+})
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
