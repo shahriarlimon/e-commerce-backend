@@ -1,0 +1,1 @@
+module.exports = recordsPerPage = 2;
