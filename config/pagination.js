@@ -1,1 +1,1 @@
-module.exports = recordsPerPage = 2;
+module.exports = recordsPerPage = 3;
