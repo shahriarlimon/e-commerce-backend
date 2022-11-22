@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 5000
+const port = 4000
 const connectDb = require("./Db/db.js")
 const { errorHandler } = require('./middlewares/error.js')
 const apiRoutes = require("./Routes/apiRoutes")

@@ -24,7 +24,7 @@ exports.newCategory = async (req, res, next) => {
 
 
     } catch (error) {
-        next(error.message)
+        next(error)
     }
 }
 exports.categoryDelete = async (req, res, next) => {
@@ -37,7 +37,7 @@ exports.categoryDelete = async (req, res, next) => {
         }
 
     } catch (error) {
-        next(error.message)
+        next(error)
 
     }
 }
@@ -70,7 +70,7 @@ exports.saveAttrs = async (req, res, next) => {
 
 
     } catch (error) {
-        next(error.message)
+        next(error)
 
     }
 }
