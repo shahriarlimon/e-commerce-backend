@@ -1,5 +1,5 @@
 const express = require('express');
-const { getProduct, getProductById, getBestSeller, adminGetProduct, adminDeleteProduct, adminCreateProduct, adminUpdateProduct } = require('../Controllers/productController');
+const { getProduct, getProductById, getBestSeller, adminGetProduct, adminDeleteProduct, adminCreateProduct, adminUpdateProduct, adminFileUpload } = require('../Controllers/productController');
 const router = express.Router();
 router.get("/category/:categoryName/search/:searchQuery", getProduct)
 router.get("/category/:categoryName", getProduct);
@@ -13,4 +13,5 @@ router.get("/admin", adminGetProduct)
 router.delete("/admin/:id", adminDeleteProduct)
 router.put("/admin/:id", adminUpdateProduct)
 router.post("/admin/create-one", adminCreateProduct)
+router.post("/admin/upload", adminFileUpload)
 module.exports = router;

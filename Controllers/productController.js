@@ -1,5 +1,7 @@
 const Product = require("../models/ProductModel");
-const recordsPerPage = require("../config/pagination")
+const recordsPerPage = require("../config/pagination");
+const { sendError } = require("../utils/helper");
+const { imageValidate } = require("../utils/imageValidate");
 exports.getProduct = async (req, res, next) => {
     try {
         let query = {};
@@ -179,6 +181,43 @@ exports.adminUpdateProduct = async (req, res, next) => {
         }
         await product.save();
         res.json({ message: "Product updated successfully" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.adminFileUpload = async (req, res, next) => {
+    try {
+        if (!req.files || !!req.files.images === false) {
+            return res.status(400).send("No files were uploaded")
+
+        }
+        const validateResult = imageValidate(req.files.images);
+        if (validateResult.error) sendError(res, validateResult.error, 400)
+        const path = require("path");
+        const { v4: uuidv4 } = require('uuid');
+        const uploadDirectory = path.resolve(__dirname, "../../frontend", "public", "images", "products")
+        let imagesTable = [];
+        let product = await Product.findById(req.query.productId).orFail();
+
+        if (Array.isArray(req.files.images)) {
+            imagesTable = req.files.images
+        } else {
+            imagesTable.push(req.files.images)
+        }
+        for (let image of imagesTable) {
+            var fileName = uuidv4() + path.extname(image.name)
+            var uploadPath = uploadDirectory + "/" + fileName;
+            product.images.push({ path: "/images/products/" + fileName })
+            image.mv(uploadPath, function (err) {
+                if (err) {
+                    return res.status(500).send(err)
+                }
+            })
+            await product.save()
+            res.json({ message: "Files uploaded" })
+
+        }
     } catch (error) {
         next(error)
     }
