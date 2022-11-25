@@ -12,6 +12,7 @@ router.get('/get-one/:id', getProductById)
 router.get("/admin", adminGetProduct)
 router.delete("/admin/:id", adminDeleteProduct)
 router.put("/admin/:id", adminUpdateProduct)
+router.delete("/admin/image/:imagePath/:productId", adminDeleteProduct)
 router.post("/admin/create-one", adminCreateProduct)
 router.post("/admin/upload", adminFileUpload)
 module.exports = router;

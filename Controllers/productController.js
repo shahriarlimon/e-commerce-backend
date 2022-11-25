@@ -222,3 +222,18 @@ exports.adminFileUpload = async (req, res, next) => {
         next(error)
     }
 }
+
+exports.adminDeleteProductImage = async (req, res, next) => {
+    try {
+        const imagePath = decodeURIComponent(req.params.imagePath);
+        const path = require("path")
+        const finalPath = path.resolve("../frontend/public") + imagePath;
+        const fs = require("fs")
+        fs.unlink(finalPath, (err) => {
+            if (err) { res.status(500).send(err) }
+        })
+        return res.end()
+    } catch (error) {
+        next(error)
+    }
+}
