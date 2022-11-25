@@ -136,3 +136,50 @@ exports.adminDeleteProduct = async (req, res, next) => {
         next(error)
     }
 }
+
+exports.adminCreateProduct = async (req, res, next) => {
+    try {
+        const product = new Product()
+        const { name, description, count, price, category, attributesTable } = req.body;
+        product.name = name;
+        product.description = description;
+        product.count = count;
+        product.price = price;
+        product.category = category;
+        if (attributesTable > 0) {
+            attributesTable.map((item) => {
+                product.attrs.push(item)
+            })
+        }
+        await product.save();
+        res.json({
+            message: "Product created",
+            productId: product._id
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.adminUpdateProduct = async (req, res, next) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        const { name, category, description, price, count, attributesTable } = req.body;
+        product.name = name || product.name;
+        product.category = category || product.category;
+        product.description = description || product.description;
+        if (attributesTable.length > 0) {
+            product.attrs = [];
+            attributesTable.map((item) => {
+                product.attrs.push(item)
+            })
+        } else {
+            product.attrs = []
+        }
+        await product.save();
+        res.json({ message: "Product updated successfully" })
+    } catch (error) {
+        next(error)
+    }
+}
