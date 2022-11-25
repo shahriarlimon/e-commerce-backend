@@ -117,3 +117,22 @@ exports.getBestSeller = async (req, res, next) => {
         next(error)
     }
 }
+
+
+exports.adminGetProduct = async (req, res, next) => {
+    try {
+        const products = await Product.find({}).sort({ category: 1 }).select("name price category")
+        res.json(products)
+    } catch (error) {
+        next(error)
+    }
+}
+exports.adminDeleteProduct = async (req, res, next) => {
+    try {
+        const product = await Product.findById(req.params.id).orFail();
+        await product.remove();
+        res.json({ message: "Product removed" })
+    } catch (error) {
+        next(error)
+    }
+}

@@ -10,6 +10,10 @@ const productSchema = mongoose.Schema({
         unique: true,
         required: true
     },
+    category: {
+        type: String,
+        required: true
+    },
     description: {
         type: String,
         required: true
