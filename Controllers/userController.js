@@ -1,4 +1,6 @@
+const Review = require("../models/ReviewModel");
 const User = require("../models/UserModel");
+const Product = require("../models/ProductModel")
 const { use } = require("../Routes/userRoutes");
 const { generateToken } = require("../utils/generateToken");
 const { hashPassword, comparePassword } = require("../utils/hashPassword");
@@ -88,6 +90,87 @@ exports.userUpdateProfile = async (req, res, next) => {
         if (req.body.password !== user.password) {
             user.password = hashPassword(req.body.password)
         }
+        await user.save()
+        res.json({
+            message: "User updated", updatedUser: {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                admin: user.isAdmin
+            }
+
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.getUserProfile = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).orFail();
+        res.send(user)
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.writeReview = async (req, res, next) => {
+    try {
+        const { comment, rating } = req.body;
+        if (!(comment && rating)) {
+            return res.status(400).send("All inputs are required")
+        }
+        /* creating review id manually cause it is needed for saving in product collection */
+        const ObjectId = require("mongodb").ObjectId;
+        let reviewId = ObjectId();
+        await Review.create([{
+            _id: reviewId,
+            comment: comment,
+            rating: Number(rating),
+            user: { _id: req.user._id, name: req.user.firstName + " " + req.user.lastName }
+        }])
+        const product = await Product.findById(req.params.productId).populate("reviews");
+        const alreadyReviewed = product.reviews.find((r) => r.user._id.toString() === req.user._id.toString());
+        if (alreadyReviewed) {
+            return res.status(400).send("product already reviewed")
+        }
+        let prc = [...product.reviews]
+        prc.push({ rating: rating })
+        product.reviews.push(reviewId)
+        if (product.reviews.length === 1) {
+            product.rating = Number(rating)
+            product.reviewsNumber = 1
+        } else {
+            product.reviewsNumber = product.reviews.length;
+            product.rating = prc.map((item) => Number(item.rating)).reduce((sum, item) => sum + item, 0) / product.reviews.length;
+
+        }
+        await product.save()
+        res.send("Review added")
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.adminGetUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).select("firstName lastName email isAdmin").orFail()
+        return res.send(user)
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.adminUpdateUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).orFail();
+        user.firstName = req.body.firstName || user.firstName;
+        user.lastName = req.body.lastName || user.lastName;
+        user.email = req.body.email || user.email;
+        user.isAdmin = req.body.isAdmin || user.isAdmin;
+        await user.save()
+
     } catch (error) {
         next(error)
     }
