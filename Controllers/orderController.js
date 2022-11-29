@@ -75,3 +75,30 @@ exports.updateOrderToDeliver = async (req, res, next) => {
         next(error)
     }
 }
+
+exports.getOrders = async (req, res, next) => {
+    try {
+        const orders = await Order.find({}).populate("user", "-password").sort({ paymentMethod: "desc" })
+        res.send(orders)
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.getOrderForAnalysis = async (req, res, next) => {
+    try {
+        const start = new Date(req.params.date)
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(req.params.date)
+        end.setHours(23, 59, 59, 999);
+        const order = await Order.find({
+            createdAt: {
+                $gte: start,
+                $lte: end
+            }
+        })
+        res.send(order)
+    } catch (error) {
+        next(error)
+    }
+}
