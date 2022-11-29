@@ -170,7 +170,16 @@ exports.adminUpdateUser = async (req, res, next) => {
         user.email = req.body.email || user.email;
         user.isAdmin = req.body.isAdmin || user.isAdmin;
         await user.save()
-
+        res.send("User is updated")
+    } catch (error) {
+        next(error)
+    }
+}
+exports.deleteUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id).orFail();
+        await user.remove()
+        res.send("User is removed")
     } catch (error) {
         next(error)
     }
