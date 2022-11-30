@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed:data": "node seeder/seeder.js",
+    "seed:data-d": "node seeder/seeder.js -d"
   },
   "author": "",
   "license": "ISC",

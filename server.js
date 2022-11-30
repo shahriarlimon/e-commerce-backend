@@ -23,7 +23,25 @@ app.use("/api/v1", apiRoutes);
 
 
 
-app.use(errorHandler)
+app.use((error,req,res,next)=>{
+  if(process.env.NODE_ENV==="development"){
+    console.log(error)
+  }
+  next(error)
+})
+app.use((error,req,res,next)=>{
+  if(process.env.NODE_ENV==="development"){
+    res.status(500).json({
+      message:error.message,
+      stack:error.stack
+    })
+  }else{
+    res.status(500).json({
+      message:error.message
+    })
+  }
+  next(error)
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
